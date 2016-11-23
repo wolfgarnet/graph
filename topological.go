@@ -38,7 +38,7 @@ func (ts *TopologicalSort) Sort(nodes []*Node) (sorted []*Node, err error) {
 	}
 
 	for {
-		unmarked := findUnmarkedNode(nodes)
+		unmarked := ts.findUnmarkedNode(nodes)
 		if unmarked == nil {
 			break
 		}
@@ -66,7 +66,7 @@ func (ts *TopologicalSort) topologicalSortVisit(n *Node, sorted *[]*Node) error 
 				continue
 			}
 
-			edge.Source.topologicalSortVisit(sorted)
+			ts.topologicalSortVisit(edge.Source, sorted)
 		}
 
 		n.mark = permanentlyMarked
