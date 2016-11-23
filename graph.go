@@ -1,4 +1,4 @@
-package dependency
+package graph
 
 import (
 	"fmt"
@@ -8,6 +8,9 @@ import (
 type Graph struct {
 	Nodes []*Node
 	NodeStringer func(interface{}) string
+
+	OnEdgeData func(*Edge, interface{})
+	OnEdgeCreated func(*Edge)
 	// TODO a sub map of regions/graphs
 }
 
@@ -164,7 +167,7 @@ func (g *Graph) HasCyclicDependencies() bool {
 type Edge struct {
 	Node1       *Node
 	Node2       *Node
-	Data        string
+	Data        interface{}
 	CrossRegion bool
 }
 
@@ -231,6 +234,8 @@ func (n *Node) DependOn(other *Node) *Edge {
 		// The dependency
 		Node2: other,
 	}
+
+	n.graph.OnEdgeCreated(edge)
 
 	// Insert the edge into node 1 and node 2
 	n.Edges = append(n.Edges, edge)
@@ -406,4 +411,8 @@ func (n *Node) hasCyclicDependency(deps []*Node) bool {
 
 func (n Node) String() string {
 	return fmt.Sprintf("Node-%v", n.ID)
+}
+
+func (n Node) Stringify() string {
+	return n.graph.NodeStringer(n.Data)
 }
