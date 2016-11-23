@@ -9,8 +9,10 @@ type Graph struct {
 	Nodes        map[interface{}]*Node
 	NodeStringer func(interface{}) string
 
+	OnNodeCreated func(*Node)
 	OnEdgeCreated func(*Edge)
-	Regions       map[interface{}][]*Node
+
+	Regions map[interface{}][]*Node
 }
 
 // NewGraph returns a new graph
@@ -52,6 +54,9 @@ func (g *Graph) NewNode(data interface{}) (node *Node) {
 		node.ID = uint32(len(g.Nodes))
 		node.graph = g
 		g.Nodes[data] = node
+		if g.OnNodeCreated != nil {
+			g.OnNodeCreated(node)
+		}
 	}
 
 	return
