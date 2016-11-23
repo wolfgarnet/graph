@@ -17,7 +17,7 @@ type Graph struct {
 func NewGraph() *Graph {
 	return &Graph{
 		Nodes:make(map[interface{}]*Node),
-		Regions:make(map[interface{}]*Node),
+		Regions:make(map[interface{}][]*Node),
 	}
 }
 
