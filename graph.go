@@ -6,18 +6,18 @@ import (
 
 // Graph represents a graph
 type Graph struct {
-	Nodes map[interface{}]*Node
+	Nodes        map[interface{}]*Node
 	NodeStringer func(interface{}) string
 
 	OnEdgeCreated func(*Edge)
-	Regions map[interface{}][]*Node
+	Regions       map[interface{}][]*Node
 }
 
 // NewGraph returns a new graph
 func NewGraph() *Graph {
 	return &Graph{
-		Nodes:make(map[interface{}]*Node),
-		Regions:make(map[interface{}][]*Node),
+		Nodes:   make(map[interface{}]*Node),
+		Regions: make(map[interface{}][]*Node),
 	}
 }
 
@@ -144,6 +144,37 @@ func (g *Graph) findUnmarkedNode(region interface{}) *Node {
 	return nil
 }
 
+func TopologicalSort(nodes []*Node) (sorted []*Node, err error) {
+	for _, n := range nodes {
+		n.mark = unmarked
+		n.localSort = true
+	}
+
+	for {
+		unmarked := findUnmarkedNode(nodes)
+		if unmarked == nil {
+			break
+		}
+
+		err = unmarked.topologicalSortVisit(&sorted)
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func findUnmarkedNode(nodes []*Node) *Node {
+	for _, n := range nodes {
+		if n.mark == unmarked {
+			return n
+		}
+	}
+
+	return nil
+}
+
 // Find will find a graph node in the graph, given the ast node.
 // If the ast node is not in the graph, nil is returned.
 func (g *Graph) Find(data interface{}) *Node {
@@ -185,7 +216,6 @@ func (g *Graph) HasCyclicDependencies() bool {
 
 // Edge represents an edge between two nodes in a graph.
 type Edge struct {
-
 	Source      *Node
 	Destination *Node
 	Data        interface{}
@@ -211,18 +241,18 @@ const (
 // Node represents a node in a graph
 type Node struct {
 	// ID is the id of the node
-	ID       uint32
+	ID uint32
 	// Data is the data of the node
-	Data     interface{}
+	Data interface{}
 	// Edges are the edges of the node
-	Edges    []*Edge
+	Edges []*Edge
 	// Region defines which region the node belongs to
-	Region   interface{}
+	Region interface{}
 	// Some data that can be piggy backed on the node
 	Metadata interface{}
 
 	// An internal reference to the graph the node is attached to
-	graph    *Graph
+	graph *Graph
 
 	// For topological sort
 	mark      topologicalMark
