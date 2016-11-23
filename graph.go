@@ -10,7 +10,7 @@ type Graph struct {
 	NodeStringer func(interface{}) string
 
 	OnEdgeCreated func(*Edge)
-	// TODO a sub map of regions/graphs
+	Regions map[interface{}][]*Node
 }
 
 // NewGraph returns a new graph
@@ -214,7 +214,7 @@ func newNode(data interface{}) *Node {
 
 func (n *Node) PutIntoRegion(region interface{}) *Node {
 	n.Region = region
-	// TODO insert into a map of regions in the graph
+	n.graph.Regions[region] = append(n.graph.Regions[region], n)
 	return n
 }
 
