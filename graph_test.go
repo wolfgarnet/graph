@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestGraph(t *testing.T) {
@@ -414,6 +414,43 @@ func TestGraph_topologicalSort4(t *testing.T) {
 	n6.DependOn(n7)
 
 	sorted, err := g.TopologicalSort(nil)
+	if err != nil {
+		t.Errorf("Unable to sort topological: %v", err)
+	}
+
+	err = validateTopologicalSort(sorted)
+	if err != nil {
+		t.Errorf("Failed: %v", err)
+	}
+}
+
+func TestGraph_topologicalSort5(t *testing.T) {
+	g := NewGraph()
+
+	n0 := g.NewNode(0)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
+	n5 := g.NewNode(5)
+	n6 := g.NewNode(6)
+	n7 := g.NewNode(7)
+	n8 := g.NewNode(8)
+	n9 := g.NewNode(9)
+
+	n9.DependOn(n8)
+	n7.DependOn(n6)
+	n6.DependOn(n5)
+	n5.DependOn(n4)
+	n4.DependOn(n1)
+	n3.DependOn(n0)
+	n5.DependOn(n3)
+	n5.DependOn(n2)
+	n8.DependOn(n6)
+
+	nodes := []*Node{n1, n3, n5, n2, n8, n7, n0, n4, n9, n6}
+
+	sorted, err := SortTopological(nodes)
 	if err != nil {
 		t.Errorf("Unable to sort topological: %v", err)
 	}

@@ -144,7 +144,7 @@ func (g *Graph) findUnmarkedNode(region interface{}) *Node {
 	return nil
 }
 
-func TopologicalSort(nodes []*Node) (sorted []*Node, err error) {
+func SortTopological(nodes []*Node) (sorted []*Node, err error) {
 	for _, n := range nodes {
 		n.mark = unmarked
 		n.localSort = true
