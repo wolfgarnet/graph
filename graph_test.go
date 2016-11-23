@@ -1,8 +1,8 @@
 package graph
 
 import (
-	"fmt"
 	"testing"
+	"fmt"
 )
 
 func TestGraph(t *testing.T) {
@@ -328,7 +328,7 @@ func TestGraph_topologicalSort(t *testing.T) {
 	n1.DependOn(n2)
 	n2.DependOn(n3)
 
-	sorted, err := g.TopologicalSort()
+	sorted, err := g.TopologicalSort(nil)
 	if err != nil {
 		t.Errorf("Unable to sort topological: %v", err)
 	}
@@ -352,7 +352,7 @@ func TestGraph_topologicalSort2(t *testing.T) {
 	n2.DependOn(n4)
 	n3.DependOn(n4)
 
-	sorted, err := g.TopologicalSort()
+	sorted, err := g.TopologicalSort(nil)
 	if err != nil {
 		t.Errorf("Unable to sort topological: %v", err)
 	}
@@ -382,7 +382,7 @@ func TestGraph_topologicalSort3(t *testing.T) {
 	n4.DependOn(n7)
 	n6.DependOn(n7)
 
-	sorted, err := g.TopologicalSort()
+	sorted, err := g.TopologicalSort(nil)
 	if err != nil {
 		t.Errorf("Unable to sort topological: %v", err)
 	}
@@ -413,9 +413,45 @@ func TestGraph_topologicalSort4(t *testing.T) {
 	n5.DependOn(n4)
 	n6.DependOn(n7)
 
-	sorted, err := g.TopologicalSort()
+	sorted, err := g.TopologicalSort(nil)
 	if err != nil {
 		t.Errorf("Unable to sort topological: %v", err)
+	}
+
+	err = validateTopologicalSort(sorted)
+	if err != nil {
+		t.Errorf("Failed: %v", err)
+	}
+}
+
+func TestGraph_topologicalSortRegions(t *testing.T) {
+	g := NewGraph()
+
+	n1 := g.NewNode(1).PutIntoRegion(1)
+	n2 := g.NewNode(2).PutIntoRegion(1)
+	n3 := g.NewNode(3).PutIntoRegion(1)
+	n4 := g.NewNode(4).PutIntoRegion(1)
+	n5 := g.NewNode(5).PutIntoRegion(2)
+	n6 := g.NewNode(6).PutIntoRegion(2)
+	n7 := g.NewNode(7).PutIntoRegion(2)
+	n8 := g.NewNode(8).PutIntoRegion(2)
+
+	n1.DependOn(n2)
+	n2.DependOn(n4)
+	n2.DependOn(n3)
+	n4.DependOn(n3)
+	n5.DependOn(n1)
+	n6.DependOn(n5)
+	n7.DependOn(n6)
+	n8.DependOn(n7)
+
+	sorted, err := g.TopologicalSort(1)
+	if err != nil {
+		t.Errorf("Unable to sort topological: %v", err)
+	}
+
+	if len(sorted) != 4 {
+		t.Errorf("The number of topologically sorted nodes are not 4, but %v", len(sorted))
 	}
 
 	err = validateTopologicalSort(sorted)

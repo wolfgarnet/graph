@@ -67,14 +67,22 @@ func (g *Graph) addNode(node *Node) {
 
 // TopologicalSort will return a slice of the graph nodes,
 // sorted topological.
-func (g *Graph) TopologicalSort() (sorted []*Node, err error) {
-	// Reset node marks
-	for _, n := range g.Nodes {
-		n.mark = unmarked
+func (g *Graph) TopologicalSort(region interface{}) (sorted []*Node, err error) {
+	// Reset node marks and set regionality
+	if region == nil {
+		for _, n := range g.Nodes {
+			n.mark = unmarked
+			n.localSort = false
+		}
+	} else {
+		for _, n := range g.Regions[region] {
+			n.mark = unmarked
+			n.localSort = true
+		}
 	}
 
 	for {
-		unmarked := g.findUnmarkedNode()
+		unmarked := g.findUnmarkedNode(region)
 		if unmarked == nil {
 			break
 		}
@@ -98,8 +106,13 @@ func (n *Node) topologicalSortVisit(sorted *[]*Node) error {
 
 		for _, edge := range n.Edges {
 			// Exclude edges where n is the dependency
-			// Or, find the edges where n points to node2
+			// Or, find the edges where n points to the destination
 			if n == edge.Source {
+				continue
+			}
+			// If doing a regional search, exclude those edges where
+			// regions do not match.
+			if n.localSort && n.Region != edge.Source.Region {
 				continue
 			}
 
@@ -113,10 +126,18 @@ func (n *Node) topologicalSortVisit(sorted *[]*Node) error {
 	return nil
 }
 
-func (g *Graph) findUnmarkedNode() *Node {
-	for _, n := range g.Nodes {
-		if n.mark == unmarked {
-			return n
+func (g *Graph) findUnmarkedNode(region interface{}) *Node {
+	if region == nil {
+		for _, n := range g.Nodes {
+			if n.mark == unmarked {
+				return n
+			}
+		}
+	} else {
+		for _, n := range g.Regions[region] {
+			if n.mark == unmarked {
+				return n
+			}
 		}
 	}
 
@@ -204,7 +225,8 @@ type Node struct {
 	graph    *Graph
 
 	// For topological sort
-	mark     topologicalMark
+	mark      topologicalMark
+	localSort bool
 }
 
 func newNode(data interface{}) *Node {
