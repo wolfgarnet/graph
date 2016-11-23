@@ -9,7 +9,6 @@ type Graph struct {
 	Nodes []*Node
 	NodeStringer func(interface{}) string
 
-	OnEdgeData func(*Edge, interface{})
 	OnEdgeCreated func(*Edge)
 	// TODO a sub map of regions/graphs
 }
