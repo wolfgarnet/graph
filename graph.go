@@ -235,7 +235,9 @@ func (n *Node) DependOn(other *Node) *Edge {
 		Node2: other,
 	}
 
-	n.graph.OnEdgeCreated(edge)
+	if n.graph.OnEdgeCreated != nil {
+		n.graph.OnEdgeCreated(edge)
+	}
 
 	// Insert the edge into node 1 and node 2
 	n.Edges = append(n.Edges, edge)
