@@ -23,11 +23,11 @@ func NewGraph() *Graph {
 func (g *Graph) Stringify() {
 	for _, n := range g.Nodes {
 		for _, e := range n.Edges {
-			if e.Node1 != n {
+			if e.Source != n {
 				continue
 			}
 
-			fmt.Printf("[%v] %v -(%v)> [%v] %v\n", n, g.NodeStringer(n.Data), e.Data, e.Node2, g.NodeStringer(e.Node2.Data))
+			fmt.Printf("[%v] %v -(%v)> [%v] %v\n", n, g.NodeStringer(n.Data), e.Data, e.Destination, g.NodeStringer(e.Destination.Data))
 		}
 	}
 }
@@ -98,11 +98,11 @@ func (n *Node) topologicalSortVisit(sorted *[]*Node) error {
 		for _, edge := range n.Edges {
 			// Exclude edges where n is the dependency
 			// Or, find the edges where n points to node2
-			if n == edge.Node1 {
+			if n == edge.Source {
 				continue
 			}
 
-			edge.Node1.topologicalSortVisit(sorted)
+			edge.Source.topologicalSortVisit(sorted)
 		}
 
 		n.mark = permanentlyMarked
@@ -163,8 +163,9 @@ func (g *Graph) HasCyclicDependencies() bool {
 
 // Edge represents an edge between two nodes in a graph.
 type Edge struct {
-	Node1       *Node
-	Node2       *Node
+
+	Source      *Node
+	Destination *Node
 	Data        interface{}
 	CrossRegion bool
 }
@@ -172,8 +173,8 @@ type Edge struct {
 // Remove will remove an edge.
 // This will remove this edge from both inbound and outbound nodes.
 func (e *Edge) Remove() {
-	e.Node1.RemoveEdge(e)
-	e.Node2.RemoveEdge(e)
+	e.Source.RemoveEdge(e)
+	e.Destination.RemoveEdge(e)
 }
 
 // topologicalMark is a mark used for sorting the graph topological
@@ -228,9 +229,9 @@ func (n *Node) DependOn(other *Node) *Edge {
 
 	edge := &Edge{
 		// The dependent
-		Node1: n,
+		Source: n,
 		// The dependency
-		Node2: other,
+		Destination: other,
 	}
 
 	if n.graph.OnEdgeCreated != nil {
@@ -248,7 +249,7 @@ func (n *Node) DependOn(other *Node) *Edge {
 func (n *Node) RemoveDependency(other *Node) {
 	i := 0
 	for _, edge := range n.Edges {
-		if edge.Node1 != n || edge.Node2 != other {
+		if edge.Source != n || edge.Destination != other {
 			n.Edges[i] = edge
 			i++
 			continue
@@ -277,15 +278,15 @@ func (n *Node) RemoveEdge(e *Edge) {
 // DependsOn will return true if this node depends on the given node.
 func (n *Node) DependsOn(other *Node) bool {
 	for _, edge := range n.Edges {
-		if edge.Node1 != n {
+		if edge.Source != n {
 			continue
 		}
 
-		if edge.Node2 == other {
+		if edge.Destination == other {
 			return true
 		}
 
-		if edge.Node2.DependsOn(other) {
+		if edge.Destination.DependsOn(other) {
 			return true
 		}
 	}
@@ -296,11 +297,11 @@ func (n *Node) DependsOn(other *Node) bool {
 // DependsOnAdjacent will return true if this node is dependent and adjacent to the other node.
 func (n *Node) DependsOnAdjacent(other *Node) *Edge {
 	for _, edge := range n.Edges {
-		if edge.Node1 != n {
+		if edge.Source != n {
 			continue
 		}
 
-		if edge.Node2 == other {
+		if edge.Destination == other {
 			return edge
 		}
 	}
@@ -314,16 +315,16 @@ func (n *Node) DistanceTo(other *Node) int {
 	shortest := 9999999
 	hasShortest := false
 	for _, edge := range n.Edges {
-		if edge.Node1 != n {
+		if edge.Source != n {
 			continue
 		}
 
-		if edge.Node2 == other {
+		if edge.Destination == other {
 			hasShortest = true
 			shortest = 1
 		}
 
-		d := edge.Node2.DistanceTo(other) + 1
+		d := edge.Destination.DistanceTo(other) + 1
 		if d < shortest {
 			hasShortest = true
 			shortest = d
@@ -340,11 +341,11 @@ func (n *Node) DistanceTo(other *Node) int {
 // DependencyLength will return the number of dependencies for the node.
 func (n *Node) DependencyLength() (c int) {
 	for _, e := range n.Edges {
-		if e.Node1 != n {
+		if e.Source != n {
 			continue
 		}
 
-		c += e.Node2.DependencyLength()
+		c += e.Destination.DependencyLength()
 		c++
 	}
 
@@ -355,7 +356,7 @@ func (n *Node) DependencyLength() (c int) {
 // dependent on this node.
 func (n *Node) IsDependency() bool {
 	for _, e := range n.Edges {
-		if e.Node2 != n {
+		if e.Destination != n {
 			continue
 		}
 
@@ -370,13 +371,13 @@ func (n *Node) IsDependency() bool {
 // all - Not only the adjacent dependency nodes will be returned, but also dependencies dependencies.
 func (n *Node) GetDependencies(unique bool, all bool) (deps []*Node) {
 	for _, edge := range n.Edges {
-		if edge.Node1 != n {
+		if edge.Source != n {
 			continue
 		}
 
-		deps = append(deps, edge.Node2)
+		deps = append(deps, edge.Destination)
 		if all {
-			deps = append(deps, edge.Node2.GetDependencies(unique, all)...)
+			deps = append(deps, edge.Destination.GetDependencies(unique, all)...)
 		}
 	}
 
@@ -405,17 +406,17 @@ func (n *Node) GetDependencies(unique bool, all bool) (deps []*Node) {
 func (n *Node) hasCyclicDependency(deps []*Node) bool {
 	deps = append(deps, n)
 	for _, e := range n.Edges {
-		if e.Node1 != n {
+		if e.Source != n {
 			continue
 		}
 
 		for _, d := range deps {
-			if d == e.Node2 {
+			if d == e.Destination {
 				return true
 			}
 		}
 
-		if e.Node2.hasCyclicDependency(deps) {
+		if e.Destination.hasCyclicDependency(deps) {
 			return true
 		}
 	}

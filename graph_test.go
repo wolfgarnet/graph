@@ -431,13 +431,13 @@ func TestGraph_topologicalSort4(t *testing.T) {
 func validateTopologicalSort(sorted []*Node) error {
 	for i, n := range sorted {
 		for _, e := range n.Edges {
-			if n == e.Node2 {
+			if n == e.Destination {
 				continue
 			}
 
-			dependencyIdx := findNode(sorted, e.Node2)
+			dependencyIdx := findNode(sorted, e.Destination)
 			if dependencyIdx > i {
-				return fmt.Errorf("Topological sort order failed: %v(%v) < %v(%v)\n", n, i, e.Node2, dependencyIdx)
+				return fmt.Errorf("Topological sort order failed: %v(%v) < %v(%v)\n", n, i, e.Destination, dependencyIdx)
 			}
 		}
 	}
