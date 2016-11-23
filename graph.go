@@ -351,6 +351,20 @@ func (n *Node) DependencyLength() (c int) {
 	return
 }
 
+// IsDependency will return true if other nodes are
+// dependent on this node.
+func (n *Node) IsDependency() bool {
+	for _, e := range n.Edges {
+		if e.Node2 != n {
+			continue
+		}
+
+		return true
+	}
+
+	return false
+}
+
 // GetDependencies will return a slice of the nodes dependencies.
 // unique - only unique nodes will be returned
 // all - Not only the adjacent dependency nodes will be returned, but also dependencies dependencies.
