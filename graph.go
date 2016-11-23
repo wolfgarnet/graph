@@ -6,7 +6,7 @@ import (
 
 // Graph represents a graph
 type Graph struct {
-	Nodes []*Node
+	Nodes map[interface{}]*Node
 	NodeStringer func(interface{}) string
 
 	OnEdgeCreated func(*Edge)
@@ -15,7 +15,9 @@ type Graph struct {
 
 // NewGraph returns a new graph
 func NewGraph() *Graph {
-	return &Graph{}
+	return &Graph{
+		Nodes:make(map[interface{}]*Node),
+	}
 }
 
 func (g *Graph) Stringify() {
@@ -41,18 +43,15 @@ func (g *Graph) PrintNodes() {
 }
 
 // NewNode will add a new node to the graph.
-// If unique is set, the ast node cannot be inserted again.
-func (g *Graph) NewNode(data interface{}, unique bool) (node *Node) {
-	if unique {
-		node = g.Find(data)
-		if node != nil {
-			return
-		}
+// If the node exists, it will return that node.
+func (g *Graph) NewNode(data interface{}) (node *Node) {
+	node = g.Find(data)
+	if node == nil {
+		node = newNode(data)
+		node.ID = uint32(len(g.Nodes))
+		node.graph = g
+		g.Nodes[data] = node
 	}
-	node = newNode(data)
-	node.ID = uint32(len(g.Nodes))
-	node.graph = g
-	g.Nodes = append(g.Nodes, node)
 
 	return
 }
@@ -62,7 +61,7 @@ func (g *Graph) addNode(node *Node) {
 		return
 	}
 
-	g.Nodes = append(g.Nodes, node)
+	g.Nodes[node.Data] = node
 }
 
 // TopologicalSort will return a slice of the graph nodes,
@@ -126,12 +125,12 @@ func (g *Graph) findUnmarkedNode() *Node {
 // Find will find a graph node in the graph, given the ast node.
 // If the ast node is not in the graph, nil is returned.
 func (g *Graph) Find(data interface{}) *Node {
-	for _, n := range g.Nodes {
-		if n.Data == data {
-			return n
-		}
+	node, hasNode := g.Nodes[data]
+	if hasNode {
+		return node
+	} else {
+		return nil
 	}
-	return nil
 }
 
 // FindById will find a node by its given id

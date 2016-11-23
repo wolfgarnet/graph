@@ -8,8 +8,8 @@ import (
 func TestGraph(t *testing.T) {
 	g := NewGraph()
 
-	g.NewNode(nil, false)
-	g.NewNode(nil, false)
+	g.NewNode(1)
+	g.NewNode(2)
 
 	if len(g.Nodes) != 2 {
 		t.Errorf("The graph does not have two root nodes")
@@ -19,8 +19,8 @@ func TestGraph(t *testing.T) {
 func TestGraph_size(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
 
 	n1.DependOn(n2)
 
@@ -32,9 +32,9 @@ func TestGraph_size(t *testing.T) {
 func TestGraph_size2(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -49,10 +49,10 @@ func TestGraph_size2(t *testing.T) {
 func TestGraph_size3(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
 
 	n1.DependOn(n2)
 	n2.DependOn(n3)
@@ -66,10 +66,10 @@ func TestGraph_size3(t *testing.T) {
 func TestGraph_dependencies(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
 
 	n1.DependOn(n2)
 	n2.DependOn(n3)
@@ -99,13 +99,13 @@ func TestGraph_dependencies(t *testing.T) {
 func TestGraph_uniqueness(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
-	n5 := g.NewNode(nil, false)
-	n6 := g.NewNode(nil, false)
-	n7 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
+	n5 := g.NewNode(5)
+	n6 := g.NewNode(6)
+	n7 := g.NewNode(7)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -131,13 +131,13 @@ func TestGraph_uniqueness(t *testing.T) {
 func TestGraph_uniqueness2(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
-	n5 := g.NewNode(nil, false)
-	n6 := g.NewNode(nil, false)
-	n7 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
+	n5 := g.NewNode(5)
+	n6 := g.NewNode(6)
+	n7 := g.NewNode(7)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -163,10 +163,10 @@ func TestGraph_uniqueness2(t *testing.T) {
 func TestGraph_dependencies2(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -197,10 +197,10 @@ func TestGraph_dependencies2(t *testing.T) {
 func TestGraph_dependencies3(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -231,9 +231,9 @@ func TestGraph_dependencies3(t *testing.T) {
 func TestGraph_cyclic(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
 
 	n1.DependOn(n2)
 	n2.DependOn(n3)
@@ -247,10 +247,10 @@ func TestGraph_cyclic(t *testing.T) {
 func TestGraph_cyclic2(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
 
 	n1.DependOn(n2)
 	n2.DependOn(n3)
@@ -265,10 +265,10 @@ func TestGraph_cyclic2(t *testing.T) {
 func TestGraph_cyclic3(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -283,12 +283,12 @@ func TestGraph_cyclic3(t *testing.T) {
 func TestGraph_dependsOn(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
-	n5 := g.NewNode(nil, false)
-	n6 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
+	n5 := g.NewNode(5)
+	n6 := g.NewNode(6)
 
 	n1.DependOn(n2)
 	n1.DependOn(n6)
@@ -321,9 +321,9 @@ func TestGraph_dependsOn(t *testing.T) {
 func TestGraph_topologicalSort(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
 
 	n1.DependOn(n2)
 	n2.DependOn(n3)
@@ -342,10 +342,10 @@ func TestGraph_topologicalSort(t *testing.T) {
 func TestGraph_topologicalSort2(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -366,13 +366,13 @@ func TestGraph_topologicalSort2(t *testing.T) {
 func TestGraph_topologicalSort3(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
-	n5 := g.NewNode(nil, false)
-	n6 := g.NewNode(nil, false)
-	n7 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
+	n5 := g.NewNode(5)
+	n6 := g.NewNode(6)
+	n7 := g.NewNode(7)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
@@ -396,13 +396,13 @@ func TestGraph_topologicalSort3(t *testing.T) {
 func TestGraph_topologicalSort4(t *testing.T) {
 	g := NewGraph()
 
-	n1 := g.NewNode(nil, false)
-	n2 := g.NewNode(nil, false)
-	n3 := g.NewNode(nil, false)
-	n4 := g.NewNode(nil, false)
-	n5 := g.NewNode(nil, false)
-	n6 := g.NewNode(nil, false)
-	n7 := g.NewNode(nil, false)
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
+	n5 := g.NewNode(5)
+	n6 := g.NewNode(6)
+	n7 := g.NewNode(7)
 
 	n1.DependOn(n2)
 	n1.DependOn(n3)
