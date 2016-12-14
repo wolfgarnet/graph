@@ -35,6 +35,21 @@ func (g *Graph) Stringify() {
 	}
 }
 
+func (g *Graph) NumberOfEdges() int {
+	c := 0
+	for _, n := range g.Nodes {
+		for _, e := range n.Edges {
+			if e.Source != n {
+				continue
+			}
+
+			c++
+		}
+	}
+
+	return c
+}
+
 func (g *Graph) PrintNodes() {
 	for _, node := range g.Nodes {
 		if node.Data != nil {
