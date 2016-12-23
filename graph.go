@@ -296,6 +296,34 @@ func (n *Node) DependOn(other *Node) *Edge {
 	if n == other {
 		return nil
 	}
+	d := n.DependsOnAdjacent(other)
+	if d != nil {
+		return d
+	}
+
+	edge := &Edge{
+		// The dependent
+		Source: n,
+		// The dependency
+		Destination: other,
+	}
+
+	if n.graph.OnEdgeCreated != nil {
+		n.graph.OnEdgeCreated(edge)
+	}
+
+	// Insert the edge into node 1 and node 2
+	n.Edges = append(n.Edges, edge)
+	other.Edges = append(other.Edges, edge)
+
+	return edge
+}
+
+// DependOn2 does a dependency check before adding the edge
+func (n *Node) DependOn2(other *Node) *Edge {
+	if n == other {
+		return nil
+	}
 	if n.DependsOn(other) {
 		return n.DependsOnAdjacent(other)
 	}
