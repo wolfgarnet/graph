@@ -318,6 +318,37 @@ func TestGraph_dependsOn(t *testing.T) {
 	}
 }
 
+func TestGraph_dependent(t *testing.T) {
+	g := NewGraph()
+
+	n1 := g.NewNode(1)
+	n2 := g.NewNode(2)
+	n3 := g.NewNode(3)
+	n4 := g.NewNode(4)
+	n5 := g.NewNode(5)
+	n6 := g.NewNode(6)
+
+	n1.DependOn(n2)
+	n1.DependOn(n6)
+	n2.DependOn(n3)
+	n2.DependOn(n5)
+	n2.DependOn(n4)
+	n4.DependOn(n5)
+
+	deps := n5.GetDependents(true, false)
+	if len(deps) != 2 {
+		t.Errorf("Number of dependents should be 2")
+	}
+
+	if !n2.DependsOn(n5) {
+		t.Errorf("Node 2 should depend on node 5")
+	}
+
+	if !n4.DependsOn(n5) {
+		t.Errorf("Node 4 should depend on node 5")
+	}
+}
+
 func TestGraph_topologicalSort(t *testing.T) {
 	g := NewGraph()
 

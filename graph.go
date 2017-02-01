@@ -504,6 +504,43 @@ func (n *Node) GetDependencies(unique bool, all bool) (deps []*Node) {
 	return
 }
 
+// GetDependent will return a slice of nodes that depends on this node.
+// unique - only unique nodes will be returned
+// all - Not only the adjacent dependency nodes will be returned, but also dependencies dependencies.
+func (n *Node) GetDependents(unique bool, all bool) (deps []*Node) {
+	for _, edge := range n.Edges {
+		if edge.Destination != n {
+			continue
+		}
+
+		deps = append(deps, edge.Source)
+		if all {
+			deps = append(deps, edge.Source.GetDependents(unique, all)...)
+		}
+	}
+
+	// Prune duplicates
+	if unique {
+		unique := make([]*Node, 0)
+		for i, n1 := range deps {
+			isIn := false
+			for j := i + 1; j < len(deps); j++ {
+				n2 := deps[j]
+				if n1 == n2 {
+					isIn = true
+					break
+				}
+			}
+			if !isIn {
+				unique = append(unique, n1)
+			}
+		}
+		deps = unique
+	}
+
+	return
+}
+
 func (n *Node) hasCyclicDependency(deps []*Node) bool {
 	deps = append(deps, n)
 	for _, e := range n.Edges {
