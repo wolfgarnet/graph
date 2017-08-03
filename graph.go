@@ -2,6 +2,7 @@ package graph
 
 import (
 	"fmt"
+	"sort"
 )
 
 // Graph represents a graph
@@ -58,6 +59,57 @@ func (g *Graph) PrintNodes() {
 			fmt.Printf("[%v]: NIL(%T)\n", node, node.Data)
 		}
 	}
+}
+
+func (g *Graph) Print() {
+	edges := make(map[*Edge]struct{id, num int})
+	id := 0
+	edgeCounter := 0
+
+	ids := make([]int, len(g.Nodes))
+	i := 0
+	for _, n := range g.Nodes {
+		ids[i] = int(n.ID)
+		i++
+	}
+
+	sort.Ints(ids)
+
+	//for _, node := range g.Nodes {
+	for _, i := range ids {
+		node := g.FindById(uint32(i))
+		if node.Data != nil {
+			if g.NodeStringer != nil {
+				fmt.Printf("[%v]: %v(%T)\n", node, g.NodeStringer(node.Data), node.Data)
+			} else {
+				fmt.Printf("[%v]: %v(%T)\n", node, node.Data, node.Data)
+			}
+		} else {
+			fmt.Printf("[%v]: NIL(%T)\n", node, node.Data)
+		}
+
+		for i, edge := range node.Edges {
+			edgeCounter++
+			value, hasEdge := edges[edge]
+			if !hasEdge {
+				value = struct{id, num int}{id, 1}
+				edges[edge] = value
+				id++
+			} else {
+				value.num++
+				edges[edge] = value
+			}
+
+			inbound := edge.Destination == node
+			if inbound {
+				fmt.Printf("  [%v] %v <- %v (%p) [%v/%v]\n", i, edge.Destination.ID, edge.Source.ID, edge, value.id, value.num)
+			} else {
+				fmt.Printf("  [%v] %v -> %v (%p) [%v/%v]\n", i, edge.Source.ID, edge.Destination.ID, edge, value.id, value.num)
+			}
+		}
+	}
+
+	fmt.Printf("Nodes: %v, Unique edges: %v, total edges: %v\n", len(g.Nodes), len(edges), edgeCounter)
 }
 
 // NewNode will add a new node to the graph.
@@ -222,6 +274,17 @@ func (g *Graph) Size() int {
 	return len(g.Nodes)
 }
 
+func (g *Graph) SizeEdges() int {
+	edges := make(map[*Edge]bool)
+	for _, n := range g.Nodes {
+		for _, e := range n.Edges {
+			edges[e] = true
+		}
+	}
+
+	return len(edges)
+}
+
 // HasCyclicDependencies returns true if the graph has cyclic dependencies.
 func (g *Graph) HasCyclicDependencies() bool {
 	for _, n := range g.Nodes {
@@ -289,6 +352,11 @@ func (n *Node) PutIntoRegion(region interface{}) *Node {
 	n.Region = region
 	n.graph.Regions[region] = append(n.graph.Regions[region], n)
 	return n
+}
+
+// CreateLink is an auxiliary function for creating a directional edge from one node to another.
+func CreateLink(from, to *Node) *Edge {
+	return from.DependOn(to)
 }
 
 // DependOn inserts the other node as a dependency for this node
