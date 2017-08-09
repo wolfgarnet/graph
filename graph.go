@@ -7,12 +7,21 @@ import (
 
 // Graph represents a graph
 type Graph struct {
+	// Nodes contains all the nodes for the graph
 	Nodes        map[interface{}]*Node
+	// NodeStringer is a function for stringifying nodes
 	NodeStringer func(interface{}) string
 
+	// OnNodeCreated is called when a node is created
 	OnNodeCreated func(*Node)
+	// OnEdgeCreated is called when an edge is created
 	OnEdgeCreated func(*Edge)
+	// OnSameNodeEdge is called when an edge is created that has same source and destination
+	OnSameNodeEdge func(*Node)
+	// OnDuplicateEdge is called when trying to create an edge that already exists
+	OnDuplicateEdge func(*Edge)
 
+	// Regions is used to group nodes into regions
 	Regions map[interface{}][]*Node
 }
 
@@ -362,10 +371,16 @@ func CreateLink(from, to *Node) *Edge {
 // DependOn inserts the other node as a dependency for this node
 func (n *Node) DependOn(other *Node) *Edge {
 	if n == other {
+		if n.graph.OnSameNodeEdge != nil {
+			n.graph.OnSameNodeEdge(n)
+		}
 		return nil
 	}
 	d := n.DependsOnAdjacent(other)
 	if d != nil {
+		if n.graph.OnDuplicateEdge != nil {
+			n.graph.OnDuplicateEdge(d)
+		}
 		return d
 	}
 
