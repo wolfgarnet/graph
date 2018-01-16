@@ -33,6 +33,7 @@ func NewGraph() *Graph {
 	}
 }
 
+// Stringify stringifies the graph
 func (g *Graph) Stringify() {
 	for _, n := range g.Nodes {
 		for _, e := range n.Edges {
