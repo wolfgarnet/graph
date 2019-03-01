@@ -2,6 +2,15 @@ package graph
 
 import "fmt"
 
+// topologicalMark is a mark used for sorting the graph topological
+type topologicalMark uint8
+
+const (
+	unmarked topologicalMark = iota
+	temporarilyMarked
+	permanentlyMarked
+)
+
 type TopologicalSort struct {
 	Nodes        []*Node
 	edgeCriteria func(*Node, *Edge) bool
