@@ -19,3 +19,13 @@ func (e *Edge) Remove() {
 func CreateLink(from, to *Node) *Edge {
 	return from.DependOn(to)
 }
+
+func RemoveEdge(node1, node2 *Node) {
+	for _, edge := range node1.Edges {
+		if edge.Source != node2 && edge.Destination != node2 {
+			continue
+		}
+
+		edge.Remove()
+	}
+}

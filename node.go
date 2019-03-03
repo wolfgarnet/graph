@@ -6,12 +6,16 @@ import "fmt"
 type Node struct {
 	// ID is the id of the node
 	ID uint32
+
 	// Data is the data of the node
 	Data interface{}
+
 	// Edges are the edges of the node
 	Edges []*Edge
+
 	// Region defines which region the node belongs to
 	Region interface{}
+
 	// Some data that can be piggy backed on the node
 	Metadata interface{}
 
@@ -128,6 +132,7 @@ func (n *Node) RemoveEdge(e *Edge) {
 }
 
 // DependsOn will return true if this node depends on the given node.
+//
 func (n *Node) DependsOn(other *Node) bool {
 	for _, edge := range n.Edges {
 		if edge.Source != n {
@@ -219,6 +224,7 @@ func (n *Node) IsDependency() bool {
 }
 
 // GetDependencies will return a slice of the nodes dependencies.
+// Points from this node
 // unique - only unique nodes will be returned
 // all - Not only the adjacent dependency nodes will be returned, but also dependencies dependencies.
 func (n *Node) GetDependencies(unique bool, all bool) (deps []*Node) {
@@ -256,6 +262,7 @@ func (n *Node) GetDependencies(unique bool, all bool) (deps []*Node) {
 }
 
 // GetDependent will return a slice of nodes that depends on this node.
+// Points to this node
 // unique - only unique nodes will be returned
 // all - Not only the adjacent dependency nodes will be returned, but also dependencies dependencies.
 func (n *Node) GetDependents(unique bool, all bool) (deps []*Node) {
